@@ -1,0 +1,126 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-02 12:59:48.436677",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "get_location",
+  "user_details_section",
+  "user_latitude",
+  "user_longitude",
+  "user_address",
+  "column_break_iije",
+  "login_user_latitude",
+  "login_user_longitude",
+  "login_user_address",
+  "section_break_aqkd",
+  "distance",
+  "section_break_hwir",
+  "location"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User"
+  },
+  {
+   "fieldname": "get_location",
+   "fieldtype": "Button",
+   "label": "Get Location"
+  },
+  {
+   "fieldname": "user_details_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "User Details"
+  },
+  {
+   "fieldname": "user_latitude",
+   "fieldtype": "Float",
+   "label": "User Latitude",
+   "precision": "7"
+  },
+  {
+   "fieldname": "column_break_iije",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user_longitude",
+   "fieldtype": "Float",
+   "label": "User Longitude",
+   "precision": "7"
+  },
+  {
+   "fieldname": "user_address",
+   "fieldtype": "Data",
+   "label": "User Address"
+  },
+  {
+   "fieldname": "login_user_latitude",
+   "fieldtype": "Float",
+   "label": "Login User Latitude",
+   "precision": "7"
+  },
+  {
+   "fieldname": "login_user_longitude",
+   "fieldtype": "Float",
+   "label": "Login User Longitude",
+   "precision": "7"
+  },
+  {
+   "fieldname": "login_user_address",
+   "fieldtype": "Data",
+   "label": "Login User Address"
+  },
+  {
+   "fieldname": "section_break_aqkd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "distance",
+   "fieldtype": "Float",
+   "hidden": 1,
+   "label": "Distance",
+   "precision": "2"
+  },
+  {
+   "fieldname": "section_break_hwir",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "HTML",
+   "label": "Location"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-03-07 12:09:26.452239",
+ "modified_by": "Administrator",
+ "module": "Mobile",
+ "name": "User Live Location",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -16,10 +16,11 @@
    "label": "Firebase Server Key"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-06-24 20:11:07.026361",
+ "modified": "2026-02-26 19:17:32.054773",
  "modified_by": "Administrator",
  "module": "Mobile",
  "name": "Mobile-App Setting",
@@ -36,6 +37,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

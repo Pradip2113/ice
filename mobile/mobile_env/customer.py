@@ -33,7 +33,7 @@ from mobile.mobile_env.app_utils import (
     get_global_defaults,
     exception_handel,
 )
-
+from mobile.mobile_env.app import get_comments
 
 @frappe.whitelist()
 def create_customer(**kwargs):
@@ -73,20 +73,55 @@ def create_customer(**kwargs):
         return exception_handel(e)
     
 
+from erpnext.accounts.utils import get_balance_on
+
 @frappe.whitelist()
-def filter_customer_list():
+def filter_customer_list(territory=None, customer_name=None):
     try:
         global_defaults = get_global_defaults()
         company = global_defaults.get("default_company")
-        list = frappe.get_all(
+        # Build filters dynamically
+        filters = {}
+        if territory:
+            filters["territory"] = territory
+        if customer_name:
+            filters["name"] = ["like", f"{customer_name}%"]
+
+        # Fetch customer details
+        customers = frappe.get_list(
             "Customer",
-                fields=[
-                    "name"
-                ],
-                # filters={"company": company},
+            fields=[
+                "name",
+                "customer_name",
+                "customer_group",
+                "territory",
+                "gst_category",
+                "owner",
+            ],
+            filters=filters,
+            order_by="modified desc"
+        )
+
+        # Add outstanding balance for each customer
+        for cust in customers:
+            try:
+                cust["outstanding"] = get_balance_on(
+                    party_type="Customer",
+                    party=cust["name"],
+                    company=company
+                )
+            except Exception:
+                cust["outstanding"] = 0.0
+            cust["sales_person"] = frappe.db.get_value(
+                "Sales Team",
+                {"parent": cust["name"]},
+                "sales_person"
             )
-        list=remove_duplicates(list,lambda item: item['name'])
-        gen_response(200,"List get successfully", list)
+        # Remove duplicates if necessary
+        customers = remove_duplicates(customers, lambda item: item["name"])
+
+        return gen_response(200, "List fetched successfully", customers)
+
     except Exception as e:
         return exception_handel(e)
 
@@ -168,6 +203,171 @@ def get_customer(name):
             } if shipping_add else None
         }
         gen_response(200, "Customer data get successfully.", result)
+    except Exception as e:
+        return exception_handel(e)
+
+@frappe.whitelist()
+def get_customer_details(customer):
+    try:
+        # --------------------------------------------------
+        # Resolve customer (ID OR customer_name)
+        # --------------------------------------------------
+        
+        customer_id = customer.strip()
+        frappe.log_error(customer_id,"customer_id")
+        if not frappe.db.exists("Customer", customer_id):
+            return gen_response(500, f"Customer {customer_id} not found")
+
+        customer_name = frappe.db.get_value(
+            "Customer", customer_id, "customer_name"
+        )
+
+        # --------------------------------------------------
+        # Contact details
+        # --------------------------------------------------
+        contact = frappe.db.get_value(
+            "Dynamic Link",
+            {
+                "link_doctype": "Customer",
+                "link_name": customer_id,
+                "parenttype": "Contact"
+            },
+            "parent"
+        )
+
+        phone, email = "", ""
+        if contact:
+            phone, email = frappe.db.get_value(
+                "Contact",
+                contact,
+                ["mobile_no", "email_id"]
+            ) or ("", "")
+
+        # --------------------------------------------------
+        # Address
+        # --------------------------------------------------
+        address = frappe.db.get_value(
+            "Dynamic Link",
+            {
+                "link_doctype": "Customer",
+                "link_name": customer_id,
+                "parenttype": "Address"
+            },
+            "parent"
+        )
+
+        address_text = ""
+        if address:
+            address_doc = frappe.get_doc("Address", address)
+            address_text = ", ".join(filter(None, [
+                address_doc.address_line1,
+                address_doc.address_line2,
+                address_doc.city,
+                address_doc.state,
+                address_doc.pincode
+            ]))
+
+        # --------------------------------------------------
+        # Orders + Total Order Amount
+        # --------------------------------------------------
+        orders = frappe.get_all(
+            "Sales Order",
+            filters={"customer": customer_id, "docstatus": 1},
+            fields=[
+                "name as order_id",
+                "transaction_date as date",
+                "grand_total as amount",
+                "status"
+            ],
+            order_by="transaction_date desc"
+        )
+
+        total_orders = len(orders)
+        total_order_amount = sum(o["amount"] or 0 for o in orders)
+
+        # --------------------------------------------------
+        # Visits + Total Visits
+        # --------------------------------------------------
+        visits = []
+        total_visits = 0
+
+        if frappe.db.table_exists("Visit"):
+            visits = frappe.get_all(
+                "Visit",
+                filters={"visitor": customer_id},
+                fields=[
+                    "name as visit_id",
+                    "visit_in_time",
+                    "visit_out_time",
+                    "visit_in_address",
+                    "visit_out_address",
+                    "description",
+                    "owner"
+                ],
+                order_by="creation desc"
+            )
+
+            total_visits = len(visits)
+
+            for v in visits:
+                v["visit_in_time"] = (
+                    v["visit_in_time"].strftime("%Y-%m-%d %I:%M %p")
+                    if v.get("visit_in_time") else None
+                )
+                v["visit_out_time"] = (
+                    v["visit_out_time"].strftime("%Y-%m-%d %I:%M %p")
+                    if v.get("visit_out_time") else None
+                )
+
+        # --------------------------------------------------
+        # Comments
+        # --------------------------------------------------
+        comments = frappe.get_all(
+            "Comment",
+            filters={
+                "reference_doctype": "Customer",
+                "reference_name": customer_id,
+                "comment_type": "Comment",
+            },
+            fields=[
+                "content as comment",
+                "comment_by",
+                "creation",
+                "comment_email",
+            ],
+            order_by="creation desc"
+        )
+
+        for c in comments:
+            user_image = frappe.get_value(
+                "User", c.comment_email, "user_image", cache=True
+            )
+
+            c["user_image"] = (
+                frappe.utils.get_url() + user_image
+                if user_image else None
+            )
+            c["commented"] = pretty_date(c["creation"])
+            c["creation"] = c["creation"].strftime("%Y-%m-%d %I:%M %p")
+
+        # --------------------------------------------------
+        # Final response
+        # --------------------------------------------------
+        result = {
+            "name": customer_name,
+            "phone": phone,
+            "email": email,
+            "address": address_text,
+            "total_visits": total_visits,
+            "total_orders": total_orders,
+            "total_order_amount": float(total_order_amount),
+            "visits": visits,
+            "comments": comments,
+            "orders": orders,
+        }
+
+        gen_response(200, "Customer data fetched successfully.", result)
+
     except Exception as e:
         return exception_handel(e)
 

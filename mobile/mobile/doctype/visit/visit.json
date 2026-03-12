@@ -8,44 +8,46 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "customer",
-  "customer_name",
+  "visit_to",
+  "visitor",
+  "visitors_name",
   "column_break_vgiwe",
-  "date",
   "time",
+  "date",
+  "column_break_efsh",
+  "employee",
+  "user",
   "section_break_dnlf8",
-  "visit_type",
-  "column_break_xtcxo",
   "description",
   "section_break_kkigf",
-  "location",
+  "visit_in_latitude",
+  "visit_in_address",
+  "visit_in_longitude",
+  "visit_in_time",
   "column_break_iqoke",
-  "employee",
-  "user"
+  "my_location_in",
+  "visit_out_image",
+  "section_break_tfem",
+  "visit_out_longitude",
+  "visit_out_latitude",
+  "visit_out_time",
+  "visit_out_address",
+  "column_break_xcqx",
+  "my_location_out"
  ],
  "fields": [
-  {
-   "fieldname": "customer",
-   "fieldtype": "Link",
-   "label": "Customer",
-   "options": "Customer"
-  },
-  {
-   "fetch_from": "customer.customer_name",
-   "fieldname": "customer_name",
-   "fieldtype": "Data",
-   "label": "Customer Name"
-  },
   {
    "fieldname": "column_break_vgiwe",
    "fieldtype": "Column Break"
   },
   {
+   "default": "Today",
    "fieldname": "date",
    "fieldtype": "Date",
    "label": "Date"
   },
   {
+   "default": "Now",
    "fieldname": "time",
    "fieldtype": "Time",
    "label": "Time"
@@ -53,18 +55,6 @@
   {
    "fieldname": "section_break_dnlf8",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "visit_type",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Visit Type",
-   "options": "Visit Type",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_xtcxo",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "description",
@@ -76,11 +66,6 @@
   {
    "fieldname": "section_break_kkigf",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "location",
-   "fieldtype": "Small Text",
-   "label": "Location"
   },
   {
    "fieldname": "column_break_iqoke",
@@ -97,11 +82,98 @@
    "fieldtype": "Link",
    "label": "User",
    "options": "User"
+  },
+  {
+   "fieldname": "visit_in_time",
+   "fieldtype": "Datetime",
+   "label": "Visit In Time"
+  },
+  {
+   "fieldname": "visit_out_time",
+   "fieldtype": "Datetime",
+   "label": "Visit Out Time"
+  },
+  {
+   "fieldname": "visit_in_latitude",
+   "fieldtype": "Data",
+   "label": "Visit In Latitude"
+  },
+  {
+   "fieldname": "visit_in_longitude",
+   "fieldtype": "Data",
+   "label": "Visit In Longitude"
+  },
+  {
+   "fieldname": "visit_out_latitude",
+   "fieldtype": "Data",
+   "label": "Visit Out Latitude"
+  },
+  {
+   "fieldname": "visit_out_longitude",
+   "fieldtype": "Data",
+   "label": "Visit Out Longitude"
+  },
+  {
+   "fieldname": "visit_in_address",
+   "fieldtype": "Data",
+   "label": "Visit in Address"
+  },
+  {
+   "fieldname": "visit_out_address",
+   "fieldtype": "Data",
+   "label": "Visit out Address"
+  },
+  {
+   "fieldname": "visit_out_image",
+   "fieldtype": "Attach",
+   "label": "Visit Out Image"
+  },
+  {
+   "fieldname": "section_break_tfem",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_xcqx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "visit_to",
+   "fieldtype": "Select",
+   "label": "Visit To",
+   "options": "Customer\nLead",
+   "reqd": 1
+  },
+  {
+   "fieldname": "visitor",
+   "fieldtype": "Dynamic Link",
+   "label": "Visitor",
+   "options": "visit_to",
+   "reqd": 1
+  },
+  {
+   "fieldname": "visitors_name",
+   "fieldtype": "Data",
+   "label": "Visitor's Name"
+  },
+  {
+   "fieldname": "my_location_in",
+   "fieldtype": "HTML",
+   "label": "My Location In"
+  },
+  {
+   "fieldname": "my_location_out",
+   "fieldtype": "HTML",
+   "label": "My Location Out"
+  },
+  {
+   "fieldname": "column_break_efsh",
+   "fieldtype": "Column Break"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-14 15:57:34.996931",
+ "modified": "2026-02-27 08:35:14.138207",
  "modified_by": "Administrator",
  "module": "Mobile",
  "name": "Visit",
@@ -121,6 +193,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

@@ -16,9 +16,10 @@
    "label": "Map"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-01 17:08:50.834812",
+ "modified": "2026-02-26 19:17:32.292546",
  "modified_by": "Administrator",
  "module": "Mobile",
  "name": "test api",
@@ -37,6 +38,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

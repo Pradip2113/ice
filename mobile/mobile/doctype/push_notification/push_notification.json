@@ -71,7 +71,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-24 20:04:14.342042",
+ "modified": "2026-02-26 19:17:31.907924",
  "modified_by": "Administrator",
  "module": "Mobile",
  "name": "Push Notification",
@@ -91,6 +91,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

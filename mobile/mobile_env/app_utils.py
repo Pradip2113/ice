@@ -2,6 +2,7 @@ import frappe
 from bs4 import BeautifulSoup
 from frappe import _
 from frappe.utils import cstr
+import re
 
 
 
@@ -13,13 +14,29 @@ def gen_response(status, message, data=[]):
         frappe.response["message"] = message
     frappe.response["data"] = data
 
+def clean_html(raw_html):
+    """Remove HTML tags for cleaner error messages."""
+    return re.sub(r"<.*?>", "", raw_html)
 
 def exception_handel(e):
     frappe.log_error(title="Mobile App Error", message=frappe.get_traceback())
+    message = cstr(e)
+    # Try to extract frappe's _server_messages if available
+    if hasattr(e, "args") and e.args:
+        try:
+            data = e.args[0]
+            if isinstance(data, dict) and "_server_messages" in data:
+                server_messages = json.loads(data["_server_messages"])
+                if server_messages:
+                    # Pick the first message and clean HTML
+                    message = clean_html(server_messages[0])
+        except Exception:
+            pass
+
     if hasattr(e, "http_status_code"):
-        return gen_response(e.http_status_code, cstr(e))
+        return gen_response(e.http_status_code, message)
     else:
-        return gen_response(500, cstr(e))
+        return gen_response(500, message)
 
 
 def generate_key(user):
